@@ -1,5 +1,4 @@
-import 'primevue/resources/themes/aura-light-green/theme.css';
-import 'primeicons/primeicons.css';
+import Lara from './presets/lara/index.js';
 import './assets/main.css';
 
 import { createApp } from 'vue';
@@ -95,10 +94,33 @@ import Tree from 'primevue/tree';
 import TreeSelect from 'primevue/treeselect';
 import TreeTable from 'primevue/treetable';
 import TriStateCheckbox from 'primevue/tristatecheckbox';
+import { usePassThrough } from "primevue/passthrough";
 
 const app = createApp(App);
 
-app.use(PrimeVue, { ripple: true });
+const CustomizedLara = usePassThrough(
+    Lara,
+    {
+        directives: {
+            ...Lara.directives,
+            tooltip: {
+                ...Lara.directives.tooltip,
+                arrow: (...args) => {
+                    const defaultArrow = Lara.directives.tooltip.arrow(...args);
+                    // context will only reflect directive modifiers, not the actual context (the true direction)
+                    console.log('arrow pt', Object.keys(args[0].context), Object.values(args[0].context));
+                    return defaultArrow;
+                }
+            }
+        }
+    },
+    {
+        mergeSections: true,
+        mergeProps: false,
+    }
+);
+
+app.use(PrimeVue, {unstyled: true, ripple: true, pt: CustomizedLara});
 app.use(ConfirmationService);
 app.use(ToastService);
 
